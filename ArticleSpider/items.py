@@ -10,6 +10,8 @@ from scrapy.loader.processors import MapCompose, TakeFirst, Join
 from scrapy.loader import ItemLoader
 import re
 from w3lib.html import remove_tags
+from ArticleSpider.utils.common import extract_num
+from ArticleSpider.settings import SQL_DATETIME_FORMAT, SQL_DATE_FORMAT
 
 
 class ArticleSpiderItem(scrapy.Item):
@@ -84,3 +86,81 @@ class JobBoleArticleItem(scrapy.Item):
     content = scrapy.Field(
         input_processor=MapCompose(remove_content_tags)
     )
+
+    def get_insert_sql(self):
+        insert_sql = """
+        insert into article(title, create_date, url, url_object_id, front_image_url, comment_nums, fav_nums, praise_nums, tags, content,front_image_path)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """
+
+        params = (
+            self["title"], self["create_date"], self["url"], self["url_object_id"], self["front_image_url"],
+            self["comment_nums"], self["fav_nums"], self["praise_nums"], self["tags"], self["content"],
+            self["front_image_path"])
+
+        return insert_sql, params
+
+
+class ZhihuQuestionItem(scrapy.Item):
+    # 知乎的问题Item
+    zhihu_id = scrapy.Field()
+    topics = scrapy.Field()
+    url = scrapy.Field()
+    title = scrapy.Field()
+    content = scrapy.Field()
+    answer_num = scrapy.Field()
+    comment_num = scrapy.Field()
+    watch_user_num = scrapy.Field()
+    click_num = scrapy.Field()
+    crawl_time = scrapy.Field()
+
+    def get_insert_sql(self):
+        # 插入知乎question表的insert语句
+        insert_sql = """
+        insert into zhihu_question(zhihu_id, topics, url, title, content, answer_num, comment_num, watch_user_num, click_num, crawl_time)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        ON DUPLICATE KEY UPDATE content = VALUES(content), answer_num = VALUES(answer_num), comment_num = VALUES(comment_num), watch_user_num = VALUES(watch_user_num),click_num = VALUES(click_num)
+        """
+
+        zhihu_id = self["zhihu_id"][0]
+        topics = ",".join(self["topics"])
+        url = self["url"][0]
+        title = "".join(self["title"])
+        content = "".join(self["content"])
+        answer_num = extract_num("".join(self["answer_num"]))
+        comment_num = extract_num("".join(self["comment_num"]))
+        watch_user_num = extract_num("".join(self["watch_user_num"][0]))
+        click_num = extract_num("".join(self["watch_user_num"][1]))
+        crawl_time = datetime.datetime.now().strftime(SQL_DATETIME_FORMAT)
+        params = (zhihu_id, topics, url, title, content, answer_num, comment_num, watch_user_num, click_num, crawl_time)
+
+        return insert_sql, params
+
+
+class ZhihuAnswerItem(scrapy.Item):
+    # 知乎的回答Item
+    zhihu_id = scrapy.Field()
+    url = scrapy.Field()
+    question_id = scrapy.Field()
+    author_id = scrapy.Field()
+    content = scrapy.Field()
+    praise_num = scrapy.Field()
+    comment_num = scrapy.Field()
+    create_time = scrapy.Field()
+    update_time = scrapy.Field()
+    crawl_time = scrapy.Field()
+
+    def get_insert_sql(self):
+        # 插入知乎answer表的insert语句
+        insert_sql = """
+        insert into zhihu_answer(zhihu_id, url, question_id, author_id, content, praise_num, comment_num, create_time, update_time, crawl_time)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) 
+        ON DUPLICATE KEY UPDATE content = VALUES(content),comment_num = VALUES(comment_num),praise_num = VALUES(praise_num),update_time = VALUES(update_time)
+        """
+        create_time = datetime.datetime.fromtimestamp(self["create_time"]).strftime(SQL_DATETIME_FORMAT)
+        update_time = datetime.datetime.fromtimestamp(self["update_time"]).strftime(SQL_DATETIME_FORMAT)
+        params = (
+            self["zhihu_id"], self["url"], self["question_id"], self["author_id"], self["content"], self["praise_num"],
+            self["comment_num"], create_time, update_time, self["crawl_time"].strftime(SQL_DATETIME_FORMAT))
+
+        return insert_sql, params

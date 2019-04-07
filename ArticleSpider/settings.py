@@ -10,6 +10,7 @@
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 import os
+import sys
 
 BOT_NAME = 'ArticleSpider'
 
@@ -70,13 +71,15 @@ ITEM_PIPELINES = {
     # 'ArticleSpider.pipelines.JsonExportPipeline': 2,
     # 'scrapy.pipelines.images.ImagesPipeline': 1,
     'ArticleSpider.pipelines.ArticleImagePipeline': 1,
-    # 'ArticleSpider.pipelines.MysqlTwistedPipeline': 2,
+    'ArticleSpider.pipelines.MysqlTwistedPipeline': 2,
 }
 
 IMAGES_URLS_FIELD = "front_image_url"  # 从item中取图片的url交给ImagesPipeline()函数处理下载图片
 project_dir = os.path.abspath(os.path.dirname(__file__))  # 取本地的存放路径
 IMAGES_STORE = os.path.join(project_dir, 'images')  # 设计本地的存放路径
 
+BASE_DIR = os.path.dirname(project_dir)
+sys.path.insert(0, os.path.join(BASE_DIR, 'ArticleSpider'))
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
 # AUTOTHROTTLE_ENABLED = True

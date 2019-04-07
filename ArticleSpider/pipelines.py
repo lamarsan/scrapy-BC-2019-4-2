@@ -97,7 +97,7 @@ class MysqlTwistedPipeline(object):
 
     def process_item(self, item, spider):
         # 使用twisted将MYSQL插入编程异步执行
-        query = self.dbpool.runInteraction(self.do_insert, item, )
+        query = self.dbpool.runInteraction(self.do_insert, item)
         query.addErrback(self.handle_error, item, spider)  # 处理异常
 
     def handle_error(self, failure, item, spider):
@@ -109,11 +109,7 @@ class MysqlTwistedPipeline(object):
         # insert_sql
         # cursor.execute(insert_sql, params)
         # 执行具体的插入
-        insert_sql = """
-        insert into article(title, create_date, url, url_object_id, front_image_url, comment_nums, fav_nums, praise_nums, tags, content,front_image_path)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """
-        cursor.execute(insert_sql, (
-            item["title"], item["create_date"], item["url"], item["url_object_id"], item["front_image_url"],
-            item["comment_nums"], item["fav_nums"], item["praise_nums"], item["tags"], item["content"],
-            item["front_image_path"]))
+        # 根据不同的item 构建不同的sql语句并插入到mysql中
+
+        insert_sql, params = item.get_insert_sql()
+        cursor.execute(insert_sql, params)
