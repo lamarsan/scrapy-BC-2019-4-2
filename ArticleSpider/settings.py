@@ -29,13 +29,13 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-# COOKIES_ENABLED = False
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 # TELNETCONSOLE_ENABLED = False
@@ -58,6 +58,10 @@ DOWNLOADER_MIDDLEWARES = {
     'ArticleSpider.middlewares.ArticlespiderDownloaderMiddleware': None,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'ArticleSpider.middlewares.RandomUserAgentMiddleware': 543,
+    # 'scrapy_crawlera.CrawleraMiddleware': 600,
+    # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+    # 'scrapy_proxies.RandomProxy': 100,
+    # 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
 }
 
 # Enable or disable extensions
@@ -86,9 +90,9 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'ArticleSpider'))
 RANDOM_UA_TYPE = 'random'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
-# AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_ENABLED = True
 # The initial download delay
-# AUTOTHROTTLE_START_DELAY = 5
+AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies
 # AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
@@ -111,3 +115,23 @@ MYSQL_PASSWORD = "root"
 
 SQL_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 SQL_DATE_FORMAT = "%Y-%m-%d"
+
+# scrapy_crawlera 收费
+# CRAWLERA_ENABLED = True
+# CRAWLERA_USER = 'afd68b89edf14c29b37742fc7f8ee6dc'
+# CRAWLERA_PASS = ''
+# CONCURRENT_REQUESTS = 32
+# CONCURRENT_REQUESTS_PER_DOMAIN = 32
+# AUTOTHROTTLE_ENABLED = False
+# DOWNLOAD_TIMEOUT = 600
+# CRAWLERA_PRESERVE_DELAY = True
+
+# scrapy_proxies 免费
+# Retry many times since proxies often fail
+# RETRY_TIMES = 10
+# Retry on most error codes since proxies fail for different reasons
+# RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+#
+# PROXY_LIST = os.path.join(project_dir, 'utils\proxys.txt')
+#
+# PROXY_MODE = 0

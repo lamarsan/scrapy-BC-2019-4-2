@@ -58,7 +58,6 @@ class GetIP(object):
             proxy_dict = {
                 "http": proxy_url,
             }
-            print(proxy_url)
             response = requests.get(http_url, proxies=proxy_dict)
         except Exception as e:
             print("invalid ip and port in Exception")
@@ -66,9 +65,9 @@ class GetIP(object):
             return False
         else:
             code = response.status_code
-            print(code)
             if code >= 200 and code < 300:
                 print("effective ip")
+                return True
             else:
                 print("invalid ip and port in else")
                 self.delete_ip(ip)
@@ -88,10 +87,8 @@ class GetIP(object):
             judge_re = self.judge_ip(ip, port)
             print(judge_re)
             if judge_re:
+                print(1)
                 return "http://{0}:{1}".format(ip, port)
             else:
+                print(0)
                 return self.get_random_ip()
-
-
-get_ip = GetIP()
-get_ip.get_random_ip()

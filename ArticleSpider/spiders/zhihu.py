@@ -25,6 +25,10 @@ class ZhihuSpider(scrapy.Spider):
         "HOST": "www.zhihu.com"
     }
 
+    custom_settings = {
+        "COOKIES_ENABLED": True,
+    }
+
     # scrapy请求的开始时start_request
     def start_requests(self):
         url = 'https://www.zhihu.com/'
@@ -167,4 +171,3 @@ class ZhihuSpider(scrapy.Spider):
             yield answer_item
         if not is_end:
             yield scrapy.Request(url=next_url, callback=self.parse_answer, headers=self.headers, dont_filter=True)
-
