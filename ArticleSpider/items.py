@@ -164,3 +164,37 @@ class ZhihuAnswerItem(scrapy.Item):
             self["comment_num"], create_time, update_time, self["crawl_time"].strftime(SQL_DATETIME_FORMAT))
 
         return insert_sql, params
+
+
+class WaiBaoItem(scrapy.Item):
+    title = scrapy.Field()
+    content = scrapy.Field()
+    url = scrapy.Field()
+    id = scrapy.Field()
+    state = scrapy.Field()
+    type = scrapy.Field()
+    location = scrapy.Field()
+
+    def get_insert_sql(self):
+        # 插入知乎answer表的insert语句
+        insert_sql = """
+        insert into demand(id, content, url, state, type, location, title)
+        VALUES (%s,%s,%s,%s,%s,%s,%s) 
+        ON DUPLICATE KEY UPDATE content = VALUES(content),state = VALUES(state),location = VALUES(location),title = VALUES(title)
+        """
+
+        id = str(self["id"][0])
+        content = self["content"][0]
+        url = self["url"][0]
+        state = str(self["state"][0])
+        type = self["type"][0]
+        location = str(self["location"][0])
+        location = location.replace("所在地：", "")
+        location = location.replace("\\", "")
+        location = "".join(location)
+        state = state.replace("项目状态：", "")
+        id = id.replace("项目编号：", "")
+        title = "".join(self["title"])
+        params = (id, content, url, state, type, location, title)
+
+        return insert_sql, params

@@ -76,7 +76,7 @@ ITEM_PIPELINES = {
     # 'ArticleSpider.pipelines.ArticleSpiderPipeline': 300,
     # 'ArticleSpider.pipelines.JsonExportPipeline': 2,
     # 'scrapy.pipelines.images.ImagesPipeline': 1,
-    'ArticleSpider.pipelines.ArticleImagePipeline': 1,
+    # 'ArticleSpider.pipelines.ArticleImagePipeline': 1,
     'ArticleSpider.pipelines.MysqlTwistedPipeline': 2,
 }
 
@@ -109,7 +109,7 @@ AUTOTHROTTLE_START_DELAY = 5
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 MYSQL_HOST = "127.0.0.1"
-MYSQL_DBNAME = "scrapy"
+MYSQL_DBNAME = "waibao"
 MYSQL_USER = "root"
 MYSQL_PASSWORD = "root"
 
